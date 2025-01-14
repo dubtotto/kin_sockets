@@ -21,10 +21,16 @@ io.on("connection", async (socket) => {
     socket.on("disconnect", (reason) => {
         console.log("Cliente desconectado:", socket.id, "Razón:", reason);
     });
-    
+
     socket.emit("connection-socket", { socket_id: socket.id, success: true })
 
     socket.on("send-form", async (data) => {
+        console.log(data)
+
+        socket.emit("response-form", { success: true, errors: [], data: [] })
+    })
+
+    socket.on("msg", async (data) => {
         console.log(data)
 
         socket.emit("response-form", { success: true, errors: [], data: [] })
