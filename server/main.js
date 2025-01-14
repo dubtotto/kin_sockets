@@ -8,6 +8,7 @@ const xml2js = require('xml2js')
 const fetch = require('node-fetch')
 const moment = require('moment')
 const { Pool } = require('pg')
+const { error } = require("console")
 
 const config = {
     host: 'osxdevel.ddns.net',
@@ -23,6 +24,12 @@ let server_url = `http://localhost:8030/api/`
 
 io.on("connection", async (socket) => {
     socket.emit("connection-socket", { socket_id: socket.id, success: true })
+
+    socket.on("send-form", async (data) => {
+        console.log(data)
+
+        socket.emit("response-form", { success: true, errors: [], data: [] })
+    })
 })
 
 const router = express.Router()
