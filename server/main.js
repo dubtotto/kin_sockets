@@ -25,9 +25,23 @@ io.on("connection", async (socket) => {
     socket.emit("connection-socket", { socket_id: socket.id, success: true })
 
     socket.on("send-form", async (data) => {
-        console.log(data)
+        console.log("send-form", data)
 
-        socket.emit("response-form", { success: true, errors: [], data: [] })
+        let response = {
+            success: true,
+            errors: [],
+            data: {
+                total: 4687.21,
+                items: [
+                    { id: 1, name: "Item 1", price: 1000.00, quantity: 1 },
+                    { id: 2, name: "Item 2", price: 2000.00, quantity: 1 },
+                    { id: 3, name: "Item 3", price: 3000.00, quantity: 1 },
+                    { id: 4, name: "Item 4", price: 687.21, quantity: 1 },
+                ],
+                pdf: "http://localhost:8040/cotizacion.pdf"
+            }
+        }
+        socket.emit("response-form", response)
     })
 
     socket.on("msg", async (data) => {
