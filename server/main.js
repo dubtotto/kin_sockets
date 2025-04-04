@@ -7,8 +7,8 @@ const moment = require('moment')
 const bodyParser = require('body-parser')
 
 
-let server_url = `http://localhost:8030/api/`
-// let server_url = `http://osxdevel.ddns.net:8000/api/`
+// let server_url = `http://localhost:8030/api/`
+let server_url = `http://67.217.247.129:8030/api/`
 
 io.on("connection", async (socket) => {
     console.log("Nuevo cliente conectado: ", socket.id)
@@ -28,7 +28,7 @@ io.on("connection", async (socket) => {
     socket.on("send-form", async (data) => {
         console.log(data)
 
-        let url = server_url+'service'
+        let url = server_url + 'service'
 
         const response_ws = await fetch(url, {
             method: 'POST',
@@ -129,6 +129,36 @@ app.post('/api/send-notificacion', async (req, res) => {
     }
     return res.status(200).send(response)
 })
+
+app.post('/api/send-cotizacion', async (req, res) => {
+    let errors = [], data = {}, response = {}
+
+    console.log(JSON.parse(req.body.data))
+    let { sockets, cotizacion } = JSON.parse(req.body.data)
+
+    sockets.forEach(async function(socket) {
+        let socket_ = await io.in(socket.socket).fetchSockets()
+        if (socket_.length) {
+
+            let response = {
+                success: true,
+                errors: [],
+                data: cotizacion
+            }
+
+            socket_[0].emit("response-form", response)
+        } else
+            console.error(moment().format() + ' - ERR-SOCKETS-001: Error al crear el objeto de socket')
+    })
+
+    response = {
+        success: errors.length ? false : true,
+        errors: errors.length ? errors : false,
+        data: errors.length ? false : data
+    }
+    return res.status(200).send(response)
+})
+
 
 async function setNotificacionAll (socket, fields){
     let response = {}
